@@ -1,0 +1,33 @@
+version: "3"
+
+services:
+  webserver:
+    image: eduardoelias/php7.3.19
+    container_name: kronos-backend
+    ports:
+      - "8081:80"
+      - "443:443"
+    links: 
+      - postgres
+    volumes: 
+      - ${DOCUMENT_ROOT-./mezzio}:/var/www/html
+      - ${PHP_INI-./.config/php/php.ini}:/usr/local/etc/php/php.ini
+      - ${VHOSTS_DIR-./.config/vhosts}:/etc/apache2/sites-enabled
+      - ${LOG_DIR-./logs/apache2}:/var/log/apache2
+    networks: 
+    - environment-kronos
+    
+  postgres:
+    container_name: kronos-db
+    image: eduardoelias/postgres
+    env_file: 
+    - .env
+    volumes:
+       - ./data/postgres
+    ports:
+      - "5432:5432"
+    networks: 
+      - environment-kronos
+    
+networks: 
+  environment-kronos:
